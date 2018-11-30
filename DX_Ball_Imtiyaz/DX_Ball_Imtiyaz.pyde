@@ -35,10 +35,8 @@ class Ball:
         self.vx=vx
         self.y=y
         self.vy=vy
-        self.num=1
     
     def display(self):
-        if self.num in range(3):
             if self.x > width:
                 self.vx=-10 
             if self.x < 0: 
@@ -76,18 +74,29 @@ class DXBall:
     def __init__(self):
         self.mode="MENU"
         self.pause=False
-        
-       
+        self.lives=3
+        self.flag=0
         
     def game(self):
         if self.mode == "PLAY":
             if b.x in range(p.paddleX-92,p.paddleX+92) and b.y in range (p.h-13,p.h-9):
+                dxb.flag=0
                 p.ground=p.h-13
                 
             elif b.y < p.h or b.y > p.h:
-                p.ground=HEIGHT+200
-                if b.y > p.ground:
-                    self.mode="GAME OVER"
+                p.ground=HEIGHT+2000
+                if b.y == HEIGHT+2000:
+                    self.flag=1
+                    self.lives=self.lives-1
+                    print self.lives
+                    if self.lives == 0:
+                        self.mode="GAME OVER"
+                        return
+                    b.vx=0
+                    b.vy=0 
+                    b.x=mouseX
+                    b.y=p.h        
+                                
 p = Paddle()
 b = Ball(x,vx,y,vy)   
 dxb = DXBall() 
@@ -132,11 +141,14 @@ def mouseClicked():
 def keyPressed():
     if keyCode == 80:
         dxb.pause = not dxb.pause
-        #dxb.pauseSound.rewind()
+        #dxb.pauseSound.rewind() 
         #dxb.pauseSound.play()
-        
-       # if dxb.pause == True:
+               # if dxb.pause == True:
         #    dxb.music.pause()
         #else:
          #   dxb.music.play()
+    elif keyCode == 32 and dxb.flag == 1:
+        p.ground=10000
+        b.vy=-10    
+
     
