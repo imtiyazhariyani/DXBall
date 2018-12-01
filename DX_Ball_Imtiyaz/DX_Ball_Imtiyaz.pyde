@@ -14,9 +14,15 @@ class Paddle:
         self.ground=10000000
         self.h=HEIGHT-120
         self.paddleX=None
-        
+        self.electricity=loadImage(path+"/images/electricity.jpg")
+        self.electricityimgs=[]
+        for num in range(12):
+            self.electricityimgs.append(loadImage(path+"/images/electricity/"+str(num)+".jpeg"))
+    
     def display(self,x):
         background(0)
+        for i in range(dxb.lives):
+            image(self.paddle,WIDTH-200+i*50,35,31,7)
         if x in range(0,92):
             self.paddleX=91
         elif x in range(WIDTH-92,WIDTH):
@@ -25,10 +31,13 @@ class Paddle:
             self.paddleX=x
         if dxb.flag==1:
             b.x=self.paddleX
+            #for i in range(12):
+                #image(self.electricity,self.paddleX-92,self.h-60,400,200,0,i*200,400,(i+1)*200)
+            for e in self.electricityimgs:
+                image(e,self.paddleX-92,self.h-60,184,92)
         #fill(255)
         #rect(self.paddleX-46,self.h,92,12)
         image(self.paddle,self.paddleX-92,self.h,184,38)
-        #print self.paddleX
     
 class Ball:
     def __init__(self,x,vx,y,vy):
@@ -36,7 +45,7 @@ class Ball:
         self.vx=vx
         self.y=y
         self.vy=vy
-    
+        
     def display(self):
             if dxb.nextlife:
                 self.ground=10000000
@@ -72,7 +81,7 @@ class Ball:
                     self.vx=30
             self.x+=self.vx
             self.y+=self.vy
-            fill(220)
+            fill(190)
             ellipse(self.x,self.y,25,25)
         
 class DXBall:
@@ -84,7 +93,6 @@ class DXBall:
         self.nextlife=False
 
     def game(self,paddleX):
-        print paddleX
         if self.mode == "PLAY":
             if b.x in range(p.paddleX-96,p.paddleX+97) and b.y in range (p.h-16,p.h ):
                 self.flag=0
@@ -94,7 +102,7 @@ class DXBall:
                 p.ground=HEIGHT+1500
                 if b.y == HEIGHT+1500:
                     self.flag=1
-                    self.lives=self.lives-1
+                    self.lifelost()
                     if self.lives == 0:
                         self.mode="GAME OVER"
                         return
@@ -110,7 +118,10 @@ class DXBall:
             b.y=10000  
             
     def nextLife(self):
-          self.nextlife=True    
+          self.nextlife=True  
+  
+    def lifelost(self):
+        self.lives=self.lives-1
                                 
 p = Paddle()
 b = Ball(x,vx,y,vy)   
@@ -139,6 +150,7 @@ def draw ():
         text("Instructions",WIDTH//2.5+20,HEIGHT//3+140)
     
     elif dxb.mode == "PLAY" or dxb.mode == "GAME OVER":
+        noCursor()
         if dxb.pause == False:
             p.display(mouseX)
             b.display()
@@ -149,10 +161,13 @@ def draw ():
             text("Paused",WIDTH//2-45,HEIGHT//2)
    
 def mouseClicked():
-    if WIDTH//2.5 < mouseX < WIDTH//2.5+250 and HEIGHT//3 < mouseY < HEIGHT//3+50:
-        #dxb.menuMusic.pause()
-        #dxb.music.play()
-        dxb.mode="PLAY"
+    if dxb.mode == "MENU":
+        if WIDTH//2.5 < mouseX < WIDTH//2.5+250 and HEIGHT//3 < mouseY < HEIGHT//3+50:
+            #dxb.menuMusic.pause()
+            #dxb.music.play()
+            dxb.mode="PLAY"
+    elif dxb.mode == "PLAY" and dxb.flag == 1:
+        dxb.nextLife()
         
 def keyPressed():
     if keyCode == 80:
@@ -163,7 +178,7 @@ def keyPressed():
         #    dxb.music.pause()
         #else:
          #   dxb.music.play()
-    elif keyCode == 32 and dxb.flag == 1:
-        dxb.nextLife()
+
+        
 
     
