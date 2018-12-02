@@ -1,5 +1,7 @@
-import os
+add_library('minim')
+import os, random
 path=os.getcwd()
+player = Minim(this)
 
 WIDTH=1500
 HEIGHT=900
@@ -15,13 +17,10 @@ class Paddle:
         self.h=HEIGHT-120
         self.paddleX=None
         self.electricity=loadImage(path+"/images/electricity.jpg")
-        self.electricityimgs=[]
-        for num in range(12):
-            self.electricityimgs.append(loadImage(path+"/images/electricity/"+str(num)+".jpeg"))
     
     def display(self,x):
         background(0)
-        for i in range(dxb.lives):
+        for i in range(dxb.lives-1):
             image(self.paddle,WIDTH-200+i*50,35,31,7)
         if x in range(0,92):
             self.paddleX=91
@@ -29,12 +28,17 @@ class Paddle:
             self.paddleX=WIDTH-92
         else:
             self.paddleX=x
-        if dxb.flag==1:
-            b.x=self.paddleX
-            #for i in range(12):
-                #image(self.electricity,self.paddleX-92,self.h-60,400,200,0,i*200,400,(i+1)*200)
-            for e in self.electricityimgs:
-                image(e,self.paddleX-92,self.h-60,184,92)
+        if dxb.flag == 1 and dxb.lives != 0:
+            b.x=p.paddleX
+            fill(102,104,106)
+            #rect(self.paddleX-78,self.h-27,10,35)
+            #rect(self.paddleX+65,self.h-27,10,35)
+            animation_electricity.display()
+            frameRate(18)
+        else:
+            frameRate(60)
+            #for e in self.electricityimgs:
+                #image(e,self.paddleX-92,self.h-60,184,92)
         #fill(255)
         #rect(self.paddleX-46,self.h,92,12)
         image(self.paddle,self.paddleX-92,self.h,184,38)
@@ -53,9 +57,9 @@ class Ball:
                 dxb.nextlife=False
             elif self.x > width:
                 self.vx=-10 
-            elif self.x < 0: 
+            elif self.x <= 0: 
                 self.vx=10
-            elif self.y < 0:
+            elif self.y <= 0:
                 self.vy=-self.vy
             elif self.y > p.ground:
                 if b.x in range(p.paddleX-94,p.paddleX-75):
@@ -81,20 +85,26 @@ class Ball:
                     self.vx=30
             self.x+=self.vx
             self.y+=self.vy
-            fill(190)
+            fill(150)
+            #stroke(150)
             ellipse(self.x,self.y,25,25)
         
 class DXBall:
     def __init__(self):
         self.mode="MENU"
         self.pause=False
-        self.lives=3
+        self.lives=4
         self.flag=0
         self.nextlife=False
+        self.menuMusic = player.loadFile(path+"/music/menu.mp3")
+        self.boink = player.loadFile(path+"/music/boink.mp3")
+        self.menuMusic.play()
 
     def game(self,paddleX):
         if self.mode == "PLAY":
-            if b.x in range(p.paddleX-96,p.paddleX+97) and b.y in range (p.h-16,p.h ):
+            if b.x in range(p.paddleX-98,p.paddleX+97) and b.y in range (p.h-16,p.h):
+                self.boink.rewind()
+                self.boink.play()
                 self.flag=0
                 p.ground=p.h-13
                 
@@ -122,10 +132,25 @@ class DXBall:
   
     def lifelost(self):
         self.lives=self.lives-1
-                                
+        
+class Animation:
+    def __init__(self,imageCount):
+        self.imageCount=imageCount
+        self.frames=0
+        self.imagelist=[]
+        
+        for num in range(self.imageCount):
+            self.imagelist.append(loadImage(path+"/images/electricity/"+str(num)+".jpeg"))
+    
+    def display(self):
+        self.frames=(self.frames+1)%self.imageCount
+        for i in range(12):
+            image(self.imagelist[self.frames],p.paddleX-72,p.h-48,142,71,0,i*200,400,(i+1)*200)
+                                                                                            
 p = Paddle()
 b = Ball(x,vx,y,vy)   
 dxb = DXBall() 
+animation_electricity = Animation(12)
 
 def setup():
     size(WIDTH,HEIGHT)
@@ -163,7 +188,7 @@ def draw ():
 def mouseClicked():
     if dxb.mode == "MENU":
         if WIDTH//2.5 < mouseX < WIDTH//2.5+250 and HEIGHT//3 < mouseY < HEIGHT//3+50:
-            #dxb.menuMusic.pause()
+            dxb.menuMusic.pause()
             #dxb.music.play()
             dxb.mode="PLAY"
     elif dxb.mode == "PLAY" and dxb.flag == 1:
@@ -178,6 +203,9 @@ def keyPressed():
         #    dxb.music.pause()
         #else:
          #   dxb.music.play()
+    elif keyCode == 77:
+        dxb.mode = "MENU"
+        cursor(POINT)
 
         
 
