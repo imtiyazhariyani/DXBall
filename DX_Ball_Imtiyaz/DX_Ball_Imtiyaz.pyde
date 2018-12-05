@@ -3,45 +3,59 @@ import os, random
 path=os.getcwd()
 player = Minim(this)
 
+#Dimensions of the screen
 WIDTH=1500
-HEIGHT=900
+HEIGHT=960
+
+#Initial paramaters of the ball
 x=0
 vx=10
 y=0
-vy=15
+vy=5
 
 class Paddle:
-    def __init__(self):
+    def __init__(self,w,h):
+        self.w=w
+        self.h=h
         self.paddle=loadImage(path+"/images/paddle.jpg")
         self.ground=10000000
-        self.h=HEIGHT-120
+        self.paddleh=self.h-120
         self.paddleX=None
+        self.paddleWidth=184
         self.electricity=loadImage(path+"/images/electricity.jpg")
     
     def display(self,x):
         background(0)
+        
+        #Image of paddle at the top of the screen to show remaining lives
         for i in range(dxb.lives-1):
-            image(self.paddle,WIDTH-200+i*50,35,31,7)
-        if x in range(0,92):
-            self.paddleX=91
-        elif x in range(WIDTH-92,WIDTH):
-            self.paddleX=WIDTH-92
+            image(self.paddle,self.w-200+i*50,35,31,7)
+        
+        #Condition to make sure paddle is entirely on screen
+        if x in range(0,self.paddleWidth/2):
+            self.paddleX=(self.paddleWidth/2)+1
+        elif x in range(self.w-self.paddleWidth/2,self.w):
+            self.paddleX=self.w-self.paddleWidth/2
         else:
             self.paddleX=x
+       
+        #Condition to display electricity animation when ball is 
         if dxb.flag == 1 and dxb.lives != 0:
             b.x=p.paddleX
             fill(102,104,106)
-            #rect(self.paddleX-78,self.h-27,10,35)
-            #rect(self.paddleX+65,self.h-27,10,35)
+            #rect(self.paddleX-78,self.paddleh-27,10,35)
+            #rect(self.paddleX+65,self.paddleh-27,10,35)
             animation_electricity.display()
             frameRate(18)
         else:
             frameRate(60)
             #for e in self.electricityimgs:
-                #image(e,self.paddleX-92,self.h-60,184,92)
+                #image(e,self.paddleX-self.paddleWidth/2,self.paddleh-60,self.paddleWidth,self.paddleWidth/2)
+        
+        #Display paddle image
         #fill(255)
-        #rect(self.paddleX-46,self.h,92,12)
-        image(self.paddle,self.paddleX-92,self.h,184,38)
+        #rect(self.paddleX-46,self.paddleh,self.paddleWidth/2,12)
+        image(self.paddle,self.paddleX-self.paddleWidth/2,self.paddleh,self.paddleWidth,38)
     
 class Ball:
     def __init__(self,x,vx,y,vy):
@@ -55,19 +69,22 @@ class Ball:
                 self.ground=10000000
                 self.vy=-15
                 dxb.nextlife=False
-            elif self.x > width:
-                self.vx=-10 
-            elif self.x <= 0: 
+            elif self.x==0 and self.y==0:
                 self.vx=10
-            elif self.y <= 0:
+                self.vy=15
+            elif self.x > p.w:
+                self.vx=-10 
+            elif self.x < 0: 
+                self.vx=10
+            elif self.y < 0:
                 self.vy=-self.vy
             elif self.y > p.ground:
-                if b.x in range(p.paddleX-94,p.paddleX-75):
+                if b.x in range(p.paddleX-92,p.paddleX-75):
                     self.vy=-self.vy
-                    self.vx=-40
+                    self.vx=-30
                 elif b.x in range(p.paddleX-75,p.paddleX-55):
                     self.vy=-self.vy
-                    self.vx=-16
+                    self.vx=-17
                 elif b.x in range(p.paddleX-55,p.paddleX-18):
                     self.vy=-self.vy
                     self.vx=-5
@@ -80,7 +97,7 @@ class Ball:
                 elif b.x in range(p.paddleX+56,p.paddleX+76):
                     self.vy=-self.vy
                     self.vx=23
-                elif b.x in range(p.paddleX+76,p.paddleX+95):
+                elif b.x in range(p.paddleX+76,p.paddleX+93):
                     self.vy=-self.vy
                     self.vx=30
             self.x+=self.vx
@@ -97,28 +114,38 @@ class DXBall:
         self.flag=0
         self.nextlife=False
         self.menuMusic = player.loadFile(path+"/music/menu.mp3")
+        self.gameTrack = player.loadFile(path+"/music/gametrack.mp3")
+        self.gameOver = player.loadFile(path+"/music/gameover.mp3")
+        self.powerDown = player.loadFile(path+"/music/powerdown.mp3")
         self.boink = player.loadFile(path+"/music/boink.mp3")
         self.menuMusic.play()
+        self.level=1
 
     def game(self,paddleX):
         if self.mode == "PLAY":
-            if b.x in range(p.paddleX-98,p.paddleX+97) and b.y in range (p.h-16,p.h):
-                self.boink.rewind()
-                self.boink.play()
+            self.gameTrack.play()
+            if b.x in range(p.paddleX-p.paddleWidth/2,p.paddleX+(p.paddleWidth/2)+1) and b.y in range (p.paddleh-15,p.paddleh):
+                if dxb.flag != 1:
+                    self.boink.rewind()
+                    self.boink.play()
                 self.flag=0
-                p.ground=p.h-13
+                p.ground=p.paddleh-15
                 
-            elif b.y < p.h or b.y > p.h:
-                p.ground=HEIGHT+1500
-                if b.y == HEIGHT+1500:
+            elif b.y < p.paddleh or b.y > p.paddleh:
+                p.ground=p.h+1500
+                if b.y == p.h+1500:
                     self.flag=1
+                    self.powerDown.rewind()
+                    self.powerDown.play()
                     self.lifelost()
                     if self.lives == 0:
                         self.mode="GAME OVER"
+                        self.gameTrack.pause()
+                        self.gameOver.play()
                         return
                     b.vx=0
                     b.vy=0 
-                    b.y=p.h
+                    b.y=p.paddleh
                     b.x=paddleX
                     
         if self.mode == "GAME OVER":
@@ -128,7 +155,7 @@ class DXBall:
             b.y=10000  
             
     def nextLife(self):
-          self.nextlife=True  
+        self.nextlife=True  
   
     def lifelost(self):
         self.lives=self.lives-1
@@ -145,34 +172,44 @@ class Animation:
     def display(self):
         self.frames=(self.frames+1)%self.imageCount
         for i in range(12):
-            image(self.imagelist[self.frames],p.paddleX-72,p.h-48,142,71,0,i*200,400,(i+1)*200)
-                                                                                            
-p = Paddle()
+            image(self.imagelist[self.frames],p.paddleX-72,p.paddleh-48,142,71,0,i*200,400,(i+1)*200)
+
+class Tile:
+    def __init__ (self, level):
+        self.level=level
+         
+        
+    def 
+
+                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                    
+p = Paddle(WIDTH,HEIGHT)
 b = Ball(x,vx,y,vy)   
 dxb = DXBall() 
 animation_electricity = Animation(12)
+tiles = Tile(dxb.level)
 
 def setup():
-    size(WIDTH,HEIGHT)
+    size(p.w,p.h)
 
 def draw ():
     if dxb.mode == "MENU":
         background(0)
         textSize(36)
         fill(70)
-        rect(WIDTH//2.5,HEIGHT//3,250,50)
-        if WIDTH//2.5 < mouseX < WIDTH//2.5+250 and HEIGHT//3 < mouseY < HEIGHT//3+50:
+        rect(p.w//2.5,p.h//3,250,50)
+        if p.w//2.5 < mouseX < p.w//2.5+250 and p.h//3 < mouseY < p.h//3+50:
             fill(0,255,0)
         else:
             fill(255)
-        text("Play Game",WIDTH//2.5+20,HEIGHT//3+40)
+        text("Play Game",p.w//2.5+20,p.h//3+40)
         fill(70)
-        rect(WIDTH//2.5,HEIGHT//3+100,250,50)
-        if WIDTH//2.5 < mouseX < WIDTH//2.5+250 and HEIGHT//3+100 < mouseY < HEIGHT//3+150:
+        rect(p.w//2.5,p.h//3+100,250,50)
+        if p.w//2.5 < mouseX < p.w//2.5+250 and p.h//3+100 < mouseY < p.h//3+150:
             fill(0,255,0)
         else:
             fill(255)
-        text("Instructions",WIDTH//2.5+20,HEIGHT//3+140)
+        text("Instructions",p.w//2.5+20,p.h//3+140)
     
     elif dxb.mode == "PLAY" or dxb.mode == "GAME OVER":
         noCursor()
@@ -183,11 +220,11 @@ def draw ():
         else:
             textSize(30)
             fill(255,0,0)
-            text("Paused",WIDTH//2-45,HEIGHT//2)
+            text("Paused",p.w//2-45,p.h//2)
    
 def mouseClicked():
     if dxb.mode == "MENU":
-        if WIDTH//2.5 < mouseX < WIDTH//2.5+250 and HEIGHT//3 < mouseY < HEIGHT//3+50:
+        if p.w//2.5 < mouseX < p.w//2.5+250 and p.h//3 < mouseY < p.h//3+50:
             dxb.menuMusic.pause()
             #dxb.music.play()
             dxb.mode="PLAY"
