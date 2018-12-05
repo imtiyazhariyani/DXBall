@@ -8,10 +8,8 @@ WIDTH=1500
 HEIGHT=960
 
 #Initial paramaters of the ball
-x=0
-vx=10
-y=0
-vy=5
+vx=0
+vy=0
 
 class Paddle:
     def __init__(self,w,h):
@@ -25,7 +23,6 @@ class Paddle:
         self.electricity=loadImage(path+"/images/electricity.jpg")
     
     def display(self,x):
-        background(0)
         
         #Image of paddle at the top of the screen to show remaining lives
         for i in range(dxb.lives-1):
@@ -39,7 +36,7 @@ class Paddle:
         else:
             self.paddleX=x
        
-        #Condition to display electricity animation when ball is 
+        #Condition to display electricity animation when ball is on paddle
         if dxb.flag == 1 and dxb.lives != 0:
             b.x=p.paddleX
             fill(102,104,106)
@@ -111,7 +108,7 @@ class DXBall:
         self.mode="MENU"
         self.pause=False
         self.lives=4
-        self.flag=0
+        self.flag=1
         self.nextlife=False
         self.menuMusic = player.loadFile(path+"/music/menu.mp3")
         self.gameTrack = player.loadFile(path+"/music/gametrack.mp3")
@@ -172,22 +169,30 @@ class Animation:
     def display(self):
         self.frames=(self.frames+1)%self.imageCount
         for i in range(12):
-            image(self.imagelist[self.frames],p.paddleX-72,p.paddleh-48,142,71,0,i*200,400,(i+1)*200)
+            image(self.imagelist[self.frames],p.paddleX-72,p.paddleh-48,142,71,0,i*200,400,(i+1)*200)                                                                                                                                                                   
 
-class Tile:
-    def __init__ (self, level):
-        self.level=level
-         
+class DisplayTile:
+    def __init__ (self):
+        self.x=300
+        self.y=125
+        self.board=[]
         
-    def 
-
-                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                    
+    def display(self):
+        for i in range(10):
+            for s in range(15 -3,-2,-1):
+                if s-i==-1 or s-i==1:
+                    fill(196,129,0)
+                else:
+                    fill(0,188,137)
+                    stroke(133,124,132)
+                rect(self.x+(75*s),self.y+(50*i),75,50,7)                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 p = Paddle(WIDTH,HEIGHT)
-b = Ball(x,vx,y,vy)   
+b = Ball(p.paddleX,vx,p.paddleh,vy)   
 dxb = DXBall() 
 animation_electricity = Animation(12)
-tiles = Tile(dxb.level)
+d = DisplayTile()
+#t = Tile()
 
 def setup():
     size(p.w,p.h)
@@ -212,6 +217,8 @@ def draw ():
         text("Instructions",p.w//2.5+20,p.h//3+140)
     
     elif dxb.mode == "PLAY" or dxb.mode == "GAME OVER":
+        background(0)
+        d.display()
         noCursor()
         if dxb.pause == False:
             p.display(mouseX)
