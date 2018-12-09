@@ -60,6 +60,13 @@ class Ball:
         self.vx=vx
         self.y=y
         self.vy=vy
+        self.frames=0
+        self.imageCount=79
+        self.imagelist=[]
+        
+        for num in range(self.imageCount):
+            self.imagelist.append(loadImage(path+"/images/ball_edited/frame_"+str(num)+"_delay-0.05s.jpeg"))
+    
         
     def display(self):
             if dxb.nextlife:
@@ -102,7 +109,10 @@ class Ball:
             fill(150)
             #stroke(150)
             ellipse(self.x,self.y,25,25)
-        
+            self.frames=(self.frames+1)%self.imageCount
+            #for i in range(self.imageCount):
+                #image(self.imagelist[self.frames],b.x-25,b.y-25,35,35)
+                                                                                                                                                                           
 class DXBall:
     def __init__(self):
         self.mode="MENU"
@@ -243,10 +253,10 @@ def keyPressed():
         dxb.pause = not dxb.pause
         #dxb.pauseSound.rewind() 
         #dxb.pauseSound.play()
-               # if dxb.pause == True:
-        #    dxb.music.pause()
-        #else:
-         #   dxb.music.play()
+        if dxb.pause == True:
+            dxb.gameTrack.pause()
+        else:
+            dxb.gameTrack.play()
     elif keyCode == 77:
         dxb.mode = "MENU"
         cursor(POINT)
