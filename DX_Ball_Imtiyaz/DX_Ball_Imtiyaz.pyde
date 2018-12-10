@@ -63,9 +63,10 @@ class Ball:
         self.frames=0
         self.imageCount=79
         self.imagelist=[]
+        self.bounce = player.loadFile(path+"/music/bounce.mp3")
         
         for num in range(self.imageCount):
-            self.imagelist.append(loadImage(path+"/images/ball_edited/frame_"+str(num)+"_delay-0.05s.jpeg"))
+            self.imagelist.append(loadImage(path+"/images/ball_edited2/frame_"+str(num)+"_delay-0.05s.png"))
     
         
     def display(self):
@@ -76,14 +77,22 @@ class Ball:
             elif self.x==0 and self.y==0:
                 self.vx=10
                 self.vy=15
+                self.bounce.rewind()
+                self.bounce.play()
             elif self.x > p.w:
                 self.vx=-10 
+                self.bounce.rewind()
+                self.bounce.play()
             elif self.x < 0: 
                 self.vx=10
+                self.bounce.rewind()
+                self.bounce.play()
             elif self.y < 0:
                 self.vy=-self.vy
+                self.bounce.rewind()
+                self.bounce.play()
             elif self.y > p.ground:
-                if b.x in range(p.paddleX-92,p.paddleX-75):
+                if b.x in range(p.paddleX-94,p.paddleX-75):
                     self.vy=-self.vy
                     self.vx=-30
                 elif b.x in range(p.paddleX-75,p.paddleX-55):
@@ -101,17 +110,17 @@ class Ball:
                 elif b.x in range(p.paddleX+56,p.paddleX+76):
                     self.vy=-self.vy
                     self.vx=23
-                elif b.x in range(p.paddleX+76,p.paddleX+93):
+                elif b.x in range(p.paddleX+76,p.paddleX+95):
                     self.vy=-self.vy
                     self.vx=30
             self.x+=self.vx
             self.y+=self.vy
             fill(150)
             #stroke(150)
-            ellipse(self.x,self.y,25,25)
+            #ellipse(self.x,self.y,25,25)
             self.frames=(self.frames+1)%self.imageCount
-            #for i in range(self.imageCount):
-                #image(self.imagelist[self.frames],b.x-25,b.y-25,35,35)
+            for i in range(self.imageCount):
+                image(self.imagelist[self.frames],self.x-20,self.y-25,30,30)
                                                                                                                                                                            
 class DXBall:
     def __init__(self):
@@ -130,7 +139,7 @@ class DXBall:
 
     def game(self,paddleX):
         if self.mode == "PLAY":
-            self.gameTrack.play()
+            #self.gameTrack.play()
             if b.x in range(p.paddleX-p.paddleWidth/2,p.paddleX+(p.paddleWidth/2)+1) and b.y in range (p.paddleh-15,p.paddleh):
                 if dxb.flag != 1:
                     self.boink.rewind()
@@ -138,12 +147,12 @@ class DXBall:
                 self.flag=0
                 p.ground=p.paddleh-15
                 
-            elif b.y < p.paddleh or b.y > p.paddleh:
+            elif b.y > p.paddleh:
+                self.powerDown.rewind()
+                self.powerDown.play()
                 p.ground=p.h+1500
                 if b.y == p.h+1500:
                     self.flag=1
-                    self.powerDown.rewind()
-                    self.powerDown.play()
                     self.lifelost()
                     if self.lives == 0:
                         self.mode="GAME OVER"
@@ -183,19 +192,19 @@ class Animation:
 
 class DisplayTile:
     def __init__ (self):
-        self.x=300
+        self.x=265
         self.y=125
         self.board=[]
         
     def display(self):
-        for i in range(10):
-            for s in range(15 -3,-2,-1):
-                if s-i==-1 or s-i==1:
+        for i in range(9):
+            for s in range(16 -3,-2,-1):
+                if s%2!=0 and i%2==0:
                     fill(196,129,0)
                 else:
                     fill(0,188,137)
                     stroke(133,124,132)
-                rect(self.x+(75*s),self.y+(50*i),75,50,7)                                                                                                                                                                                                                                                                                    
+                rect(self.x+(75*s),self.y+(50*i),75,50,5)                                                                                                                                                                                                                                                                                    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 p = Paddle(WIDTH,HEIGHT)
 b = Ball(p.paddleX,vx,p.paddleh,vy)   
