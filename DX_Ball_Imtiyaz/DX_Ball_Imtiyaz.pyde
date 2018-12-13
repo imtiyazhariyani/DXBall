@@ -119,7 +119,6 @@ class Tile:
         self.kill=False
         self.extralife=False
         self.thrubrick=False
-        #self.tilehit=player.loadFile(path+"/music/tile.mp3")
         self.explosion=player.loadFile(path+"/music/explosion.mp3")
         
     def isBallOn(self,ballx,bally):
@@ -214,6 +213,7 @@ class PowerUp:
         self.c=c
         self.vy=8
         self.coin=player.loadFile(path+"/music/coin.mp3")
+        self.tilehit=player.loadFile(path+"/music/tile.mp3")
     
     def getTile(self,x,y):
         #Method to return the identity of the tile based on the row and column
@@ -269,6 +269,8 @@ class Thrubrick(PowerUp):
     def action(self):
         if self.x in range(p.paddleX-p.paddleWidth/2,p.paddleX+(p.paddleWidth/2)+1) and self.y in range (p.paddleh-self.vy,p.paddleh):
             dxb.thrubrick=True
+            self.tilehit.rewind()
+            self.tilehit.play()
             dxb.thrubricks.remove(self)
             del self
         
@@ -276,8 +278,9 @@ class DXBall:
     """This is the main game class from where the game is controlled for levels, scores, lives, and other action"""
     def __init__(self):
         self.mode="MENU"
+        self.name=""
         self.pause=False
-        self.lives=4
+        self.lives=1
         self.grabpaddle=True
         self.level=1
         self.score=0
@@ -403,18 +406,15 @@ class DXBall:
                     b.y=p.paddleh
                     b.x=p.paddleX
         
-        #When mode is switched to game over, make the ball disappear, turn off the music, play game over sound, enter name for high score                   
-        elif self.mode == "GAME OVER":
-            b.vx=0
-            b.vy=0
-            b.x=10000
-            b.y=10000
-            self.gameTrack.pause()
-            self.gameOver.play()
-            textSize(48)
-            fill(255)
-            text("Final Score: "+str(dxb.score),300,250)
-    
+    #When mode is switched to game over, make the ball disappear, turn off the music, play game over sound, enter name for high score                   
+    def gameover(self):
+        b.vx=0
+        b.vy=0
+        b.x=10000
+        b.y=10000
+        self.gameTrack.pause()
+        self.gameOver.play()
+
     def assignPowerUps(self):
         for i in range(self.numkills):
             while True:
@@ -494,7 +494,7 @@ def draw ():
         text("High Scores",p.w//2.5+20,p.h//3+140)
         dxb.game(mouseX)
     
-    elif dxb.mode == "PLAY" or dxb.mode == "GAME OVER":
+    elif dxb.mode == "PLAY":
         background(0)
         board.display()
         noCursor()
@@ -504,8 +504,14 @@ def draw ():
             dxb.game(mouseX)
         else:
             textSize(30)
-            fill(255,0,0)
+            fill(255,255,255)
             text("Paused",p.w//2-60,p.h//2)
+    elif dxb.mode == "GAME OVER":
+        dxb.gameover()
+        fill(255,255,255)
+        textSize(36)
+        text("Enter your name: ",450,50)
+        text(str(dxb.name),760,50)
    
 def mouseClicked():
     if dxb.mode == "MENU":
@@ -516,14 +522,33 @@ def mouseClicked():
         b.vy=-b.speed
         
 def keyPressed():
-    #Press P for pausing the game
-    if keyCode == 80:
-        dxb.pause = not dxb.pause
-        if dxb.pause == True:
-            dxb.gameTrack.pause()
+    if dxb.mode == "PLAY":
+        #Press P for pausing the game
+        if keyCode == 80:
+            dxb.pause = not dxb.pause
+            if dxb.pause == True:
+                dxb.gameTrack.pause()
+            else:
+                dxb.gameTrack.play()
+        #Press M for going back to the main menu
+        elif keyCode == 77:
+            dxb.mode = "MENU"
+            cursor(POINT)
+    elif dxb.mode == "GAME OVER":
+        fill(255)
+        if type(key) == int:
+            pass
+        elif keyCode == 10:
+            f = open('highscores.txt','a')
+            f.write(dxb.name+','+str(dxb.score)+'\n')
+            f.close()
+            p.__init__(WIDTH,HEIGHT,PWIDTH)
+            b.__init__(p.paddleX,p.paddleh,SPEED)
+            board.__init__()
+            dxb.__init__()
+            dxb.mode="MENU"
+            cursor(POINT)
+        elif keyCode == 8:
+            dxb.name = dxb.name[:len(dxb.name)-1]
         else:
-            dxb.gameTrack.play()
-    #Press M for going back to the main menu
-    elif keyCode == 77:
-        dxb.mode = "MENU"
-        cursor(POINT)
+            dxb.name+=key
