@@ -1,7 +1,10 @@
 # DXBall
 Introduction to Computer Science Final Project
+
 Imtiyaz Hariyani (ieh211@nyu.edu)
+
 Fall 2018
+
 New York University Abu Dhabi
 
 ## **Project Description**
