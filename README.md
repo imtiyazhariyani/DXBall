@@ -37,7 +37,7 @@ A power-up/down is randomly contained within some tiles and will fall once the t
 
 ## **Code**
 **General:**
-The code makes use of object-oriented programming with a different class for each object in the game, including the ball, paddle, board, tiles, each of the power-ups and the main game. Most parameters can be changed 
+The code makes use of object-oriented programming with a different class for each object in the game, including the ball, paddle, board, tiles, each of the power-ups and the main game. It makes use of the concepts of inheritance and polymorphism
 
 **Components used to build the code:**
 Royalty free music and images from the internet were used to build the code, besides in-built Processing features.
