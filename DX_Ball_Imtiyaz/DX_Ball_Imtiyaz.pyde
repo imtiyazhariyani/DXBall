@@ -568,8 +568,9 @@ def draw ():
         image(dxb.highscoreimg,WIDTH/2-220,100)
         fill(255,255,255)
         textSize(36)
-        text("Enter your name: ",600,350)
-        text(str(dxb.name),920,350)
+        text("Your Score: "+str(dxb.score),600,350)
+        text("Enter your name: ",600,450)
+        text(str(dxb.name),920,450)
    
 def mouseClicked():
     if dxb.mode == "MENU":
