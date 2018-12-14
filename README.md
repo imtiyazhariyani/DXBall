@@ -4,10 +4,10 @@ Imtiyaz Hariyani (ieh211@nyu.edu)
 Fall 2018
 New York University Abu Dhabi
 
-##Project Description
+##**Project Description**
  I intend to recreate an Arcade Game from the 90s called DX-Ball. It is a classic ball and paddle single-player game where the player controls the paddle at the bottom of the screen (on the x-axis) using the mouse. The ball is then deflected off to hit color-patterned blocks without letting the ball fall below the paddle. The player gets four lives before the game ends. The aim is to score as many points as possible by hitting all the blocks and leveling up. There are several power-ups/downs, including Kill Paddle, Thru Brick, Extra Life etc. that fall from the colored blocks and can be collected using the paddle to race through the game. My aim is to build the same arcade game with improved graphics and design and implement a modifiable, non-hard coded interface that includes difficulty level (depending on speed, number of power-ups etc.). I will be working alone on this project.
 
-##Instructions
+##**Instructions**
 Installation & Running the Program:
 You need to have the latest version of Processing installed on your computer to run this game. Make sure to download all files contained in this repository. Open the .pyde file and click the 'play' button to run the code. 
 
@@ -29,18 +29,18 @@ A power-up/down is randomly contained within some tiles and will fall once the t
 3. Extra Life - The player gains an extra life.
 
 
-##Code
+##**Code**
 General:
 The code makes use of object-oriented programming with a different class for each object in the game, including the ball, paddle, board, tiles, each of the power-ups and the main game. Most parameters can be changed 
 
 Components used to build the code:
 Royalty free music and images from the internet were used to build the code, besides in-built Processing features.
 
-##Credits & Acknowledgement
+##**Credits & Acknowledgement**
 I would like to thank Professor Yasir Zaki and Mr Khalid Mengal for their support and guidance.
 
 This game is based on DX-Ball, a project by Michael P. Welch (1996-98). 
 
-##Disclaimer:
+##**Disclaimer**
 The game should not be distributed for commercial purposes.
 
